@@ -28,6 +28,7 @@ function setup() {
 	socialDistancing = createCheckbox('Some Gnats practice social distancing', false);
 	socialDistancing.changed(function(){
 		sd = !sd;
+		reset();
 	})
 }
 
@@ -79,10 +80,10 @@ function draw() {
 
 function reset(){
 	gnats = [];
-	setupGame();
 	final=false;
 	pointHistory = [];
 	frameCount = 0;
+	setupGame();
 }
 
 function keyPressed(){
