@@ -37,16 +37,14 @@ Gnat.prototype.update = function () {
 
 	if (this.infected){
 		this.timeInfected ++;
-		for (k in gnats){
-			if (gnats[k]==this){
-				continue;
-			} else if (dist(this.x, this.y, gnats[k].x, gnats[k].y) < radius*2){
-				if (!gnats[k].immune){
-					gnats[k].infected = true;
+		for (k in clearGnats){
+			if (dist(this.x, this.y, clearGnats[k].x, clearGnats[k].y) < radius*2){
+				if (!clearGnats[k].immune){
+					clearGnats[k].infected = true;
 				}
 			}
 		}
-		if (recovery.checked() && random() < 0.0001 && this.timeInfected > 400){
+		if (recovery.checked() && random() < 0.0005 && this.timeInfected > 400){
 			this.infected = false;
 			this.immune = true;
 		}

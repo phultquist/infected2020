@@ -4,8 +4,8 @@ var paused = false;
 
 var gnats = [];
 
-const count = 100;
-const radius = 5;
+var count = 100;
+var radius = 4;
 
 var majorityInfected = false;
 
@@ -15,10 +15,17 @@ var recovery;
 var socialDistancing;
 
 var sd = false;
+var button;
 
 function setup() {
   // put setup code here
+	if (getUrlVars().count){
+		count = getUrlVars().count
+	}
 
+	if (getUrlVars().radius){
+		radius = getUrlVars().radius
+	}
 	createCanvas(w, h);
 	background(51);
 
@@ -30,6 +37,11 @@ function setup() {
 		sd = !sd;
 		reset();
 	})
+
+	button = createButton('SAVE FILE');
+  button.position(21, 40);
+  button.mousePressed(createFile);
+	button.hide();
 }
 
 function setupGame(){
@@ -39,24 +51,41 @@ function setupGame(){
 		gnats.push(r);
 		r.show();
 	}
-	let masterIndex = floor(random(50))
+	let masterIndex = floor(random(count))
 	let master = gnats[masterIndex].infected = true;
 }
 
+var infectedGnats = [];
+var clearGnats = [];
+
 var final = false;
+
+var finalstr;
 
 function draw() {
 	var infectedCount = 0,
 			immuneCount = 0;
+
+	infectedGnats = [];
+	clearGnats = [];
   // put drawing code here
 	background(51);
 	stroke(255);
 	noStroke();
 	fill(255);
 	rect(rightBound, 0, w-rightBound, h)
+
+	for (b in gnats){
+		if (gnats[b].infected){
+			infectedGnats.push(gnats[b]);
+		} else {
+			clearGnats.push(gnats[b]);
+		}
+	}
 	for (i in gnats){
 		gnats[i].update();
 		gnats[i].show();
+
 		infectedCount += gnats[i].infected ? 1 : 0;
 		immuneCount += gnats[i].immune ? 1 : 0;
 		//console.log(g);
@@ -64,6 +93,13 @@ function draw() {
 	if ((immuneCount == count || infectedCount == count) && final == false){
 		final=true;
 		setTimeout(function(){
+			var str = ""
+			for (j of pointHistory){
+				str += j.frame + ":" + j.numInfected;
+				str += "\n"
+			}
+			finalstr = str;
+			button.show();
 			reset();
 		}, 1000);
  }
@@ -76,6 +112,16 @@ function draw() {
 
  recovery.position(rightBound + buffer, 20);
  socialDistancing.position(rightBound + buffer, 45);
+}
+
+function createFile() {
+  // creates a file called 'newFile.txt'
+  let writer = createWriter('data.txt');
+  // write 'Hello world!'' to the file
+	console.log(finalstr.length);
+  writer.write([finalstr]);
+  // close the PrintWriter and save the file
+  writer.close();
 }
 
 function reset(){
@@ -158,4 +204,12 @@ var d = new Date();
 var d2 = null;
 do { d2 = new Date(); }
 while(d2-d < ms);
+}
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
 }
